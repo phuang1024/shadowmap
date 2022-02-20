@@ -17,14 +17,34 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-CXX = g++
-CXXFLAGS = -Wall -O3 -std=c++17 -c -fPIC
-CXXFILES = image.o render.o scene.o utils.o
+"""
+Converts output from Shadowmap to PNG.
 
-.PHONY: all clean
+python convert.py input.img output.png
+"""
 
-all: $(CXXFILES)
-	ar rcs libshadowmap.a $(CXXFILES)
+import sys
+import struct
+import numpy as np
+import cv2
 
-clean:
-	rm -f *.o
+
+def main():
+    rgb = len(sys.argv) <= 3
+
+    with open(sys.argv[1], "rb") as fp:
+        w, h = struct.unpack("<II", fp.read(8))
+        shape = (h, w, 3) if rgb else (h, w)
+        img = np.zeros(shape, dtype=np.uint8)
+
+        for y in range(h):
+            for x in range(w):
+                if rgb:
+                    img[y, x] = struct.unpack("<BBB", fp.read(3))
+                else:
+                    img[y, x] = fp.read(1)[0]
+
+    cv2.imwrite(sys.argv[2], img)
+
+
+main()

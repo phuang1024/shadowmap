@@ -144,13 +144,6 @@ struct Sphere {
     double rad;      // radius
 
     Sphere(double x, double y, double z, double rad);
-
-    /**
-     * Intersection with a ray.
-     * If no intersection, returns arbitrarily large number.
-     * Else, smallest distance to the intersection.
-     */
-    double intersect(Ray& ray);
 };
 
 /**

@@ -43,6 +43,39 @@ void Ray::make_unit() {
 
 
 /**
+ * Position of ray at time t using its direction.
+ */
+double t_dist(Ray& ray, double t) {
+    return distance(ray.dx*t, ray.dy*t, ray.dz*t);
+}
+
+/**
+ * Intersect sphere with a ray.
+ * If no intersection, returns arbitrarily large number.
+ * Else, smallest distance to the intersection.
+ */
+double intersect(Sphere& sph, Ray& ray) {
+    double xc = ray.x - sph.x;
+    double yc = ray.y - sph.y;
+    double zc = ray.z - sph.z;
+
+    double a = pow(ray.dx, 2) + pow(ray.dy, 2) + pow(ray.dz, 2);
+    double b = 2 * (ray.dx*xc + ray.dy*yc + ray.dz*zc);
+    double c = pow(xc, 2) + pow(yc, 2) + pow(zc, 2) - pow(sph.rad, 2);
+
+    double discr = pow(b, 2) - 4*a*c;
+    if (discr < 0)
+        return 1e9;
+
+    double t1 = (-b + sqrt(discr)) / (2*a);
+    double t2 = (-b - sqrt(discr)) / (2*a);
+    double d1 = (t1 < 0) ? 1e9 : t_dist(ray, t1);
+    double d2 = (t2 < 0) ? 1e9 : t_dist(ray, t2);
+
+    return std::min(d1, d2);
+}
+
+/**
  * Builds a shadow map for light and stores in map.
  */
 void build_map(Scene& scene, ShadowMap& map, Light& light) {
@@ -58,7 +91,7 @@ void build_map(Scene& scene, ShadowMap& map, Light& light) {
             Ray ray(light.x, light.y, light.z, dx, dy, dz);
             double dist = 1e9;
             for (int i = 0; i < (int)scene.objs.size(); i++) {
-                double d = scene.objs[i].intersect(ray);
+                double d = intersect(scene.objs[i], ray);
                 if (d < dist)
                     dist = d;
             }
@@ -122,7 +155,7 @@ double render_px(Scene& scene, Image& img, int x, int y) {
     ray.make_unit();
     double dist = 1e9;
     for (int i = 0; i < (int)scene.objs.size(); i++) {
-        double d = scene.objs[i].intersect(ray);
+        double d = intersect(scene.objs[i], ray);
         if (d < dist)
             dist = d;
     }

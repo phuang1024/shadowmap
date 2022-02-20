@@ -28,7 +28,7 @@ int main() {
     scene.add_sphere(-1, 0, 1, 1);
     scene.add_light(4, -3, 6, 6000);
 
-    std::ofstream fp("out.ppm");
+    std::ofstream fp("scene1.img");
     Shadowmap::Image img(1920, 1080);
 
     Shadowmap::build(scene, true);
