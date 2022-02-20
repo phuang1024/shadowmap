@@ -22,7 +22,9 @@
 
 int main() {
     Shadowmap::Scene scene(0, -10, 3, 80);
-    scene.scene_light = 30;
+    scene.scene_light = 20;
+    scene.SHMAP_W = 8192;
+    scene.SHMAP_H = 4096;
     scene.add_sphere(0, 0, 0, 2);
     scene.add_sphere(0, 0, 3, 1);
     scene.add_sphere(-1, 0, 1, 1);
