@@ -28,6 +28,8 @@ namespace Shadowmap {
 
 typedef  unsigned char  UCH;
 
+constexpr double PI = 3.14159;
+
 /**
  * Absolute distance.
  */
@@ -170,10 +172,12 @@ struct Scene {
     std::vector<Sphere> objs;
     std::vector<Light> lights;
     std::vector<ShadowMap> shadow_maps;
+    int SHMAP_W, SHMAP_H;
 
     double cam_x, cam_y, cam_z;  // camera position, always facing +y
     double fov;   // FOV in degrees of X of camera.
     double scene_light;  // scene light intensity
+    double jitter;  // randomness in sampling
 
     bool _built;
 
@@ -187,33 +191,22 @@ struct Scene {
     ~Scene();
 
     /**
-     * Build scene.
-     * Call before rendering.
+     * Initialize default values. Called from all constructors.
      */
-    void build(bool verbose = false);
-
-    /**
-     * Builds a shadow map.
-     */
-    void build_map(ShadowMap& img, Light& light);
-
-    /**
-     * Renders an image and stores in img.
-     */
-    void render(Image& img, int samples, bool verbose = false);
-
-    /**
-     * Renders a pixel and stores in img.
-     */
-    double render_px(Image& img, int x, int y);
-
-    /**
-     * Read a pixel of the shadow map given the XYZ point.
-     * Delta values are relative to the light.
-     * Delta values are unit vector.
-     */
-    double read_shadow_map(ShadowMap& map, double dx, double dy, double dz);
+    void _init();
 };
+
+
+/**
+ * Build scene.
+ * Call before rendering.
+ */
+void build(Scene& scene, bool verbose = false);
+
+/**
+ * Renders an image and stores in img.
+ */
+void render(Scene& scene, Image& img, int samples, bool verbose = false);
 
 
 }  // namespace Shadowmap

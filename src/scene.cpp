@@ -41,7 +41,9 @@ Light::Light(double x, double y, double z, double power) {
 
 
 Scene::Scene() {
-    _built = false;
+    cam_x = cam_y = cam_z = 0;
+    fov = 60;
+    _init();
 }
 
 Scene::Scene(double cam_x, double cam_y, double cam_z, double fov) {
@@ -49,7 +51,8 @@ Scene::Scene(double cam_x, double cam_y, double cam_z, double fov) {
     this->cam_y = cam_y;
     this->cam_z = cam_z;
     this->fov = fov;
-    _built = false;
+
+    _init();
 }
 
 Scene::~Scene() {
@@ -57,6 +60,13 @@ Scene::~Scene() {
         for (ShadowMap& map: shadow_maps)
             map.free();
     }
+}
+
+void Scene::_init() {
+    _built = false;
+    SHMAP_W = 4096;
+    SHMAP_H = 2048;
+    jitter = 10;
 }
 
 
