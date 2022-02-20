@@ -17,27 +17,55 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 
-#include <cmath>
 #include "shadowmap.hpp"
 
 
 namespace Shadowmap {
 
 
-double distance(double dx, double dy, double dz) {
-    return sqrt(pow(dx, 2) + pow(dy, 2) + pow(dz, 2));
+Image::Image(int width, int height) {
+    w = width;
+    h = height;
+
+    data = new UCH[w * h * 3];
 }
 
-double distance(double dx, double dy) {
-    return sqrt(pow(dx, 2) + pow(dy, 2));
+Image::~Image() {
+    delete[] data;
 }
 
-int bounds(int v, int min, int max) {
-    return std::min(std::max(v, min), max);
+UCH Image::get(int x, int y, int chn) {
+    return data[3*(y*w + x) + chn];
 }
 
-double randd() {
-    return (rand() % (int)1e9) / 1e9;
+void Image::set(int x, int y, int chn, UCH value) {
+    data[3*(y*w + x) + chn] = value;
+}
+
+void Image::write(std::ofstream& fp) {
+    fp.write((char*)&w, sizeof(int));
+    fp.write((char*)&h, sizeof(int));
+    fp.write((char*)data, w*h*3);
+}
+
+
+ShadowMap::ShadowMap(int width, int height) {
+    w = width;
+    h = height;
+
+    data = new double[w * h];
+}
+
+void ShadowMap::free() {
+    delete[] data;
+}
+
+double ShadowMap::get(int x, int y) {
+    return data[y*w + x];
+}
+
+void ShadowMap::set(int x, int y, double value) {
+    data[y*w + x] = value;
 }
 
 
