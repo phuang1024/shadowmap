@@ -69,5 +69,13 @@ void Scene::_init() {
     jitter = 10;
 }
 
+void Scene::add_sphere(double x, double y, double z, double rad) {
+    objs.push_back(Sphere(x, y, z, rad));
+}
+
+void Scene::add_light(double x, double y, double z, double power) {
+    lights.push_back(Light(x, y, z, power));
+}
+
 
 }  // namespace Shadowmap

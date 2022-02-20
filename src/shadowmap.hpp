@@ -194,6 +194,16 @@ struct Scene {
      * Initialize default values. Called from all constructors.
      */
     void _init();
+
+    /**
+     * Add a sphere to the scene.
+     */
+    void add_sphere(double x, double y, double z, double rad);
+
+    /**
+     * Add a light to the scene.
+     */
+    void add_light(double x, double y, double z, double power);
 };
 
 
