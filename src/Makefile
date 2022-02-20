@@ -18,12 +18,13 @@
 #
 
 CXX = g++
-CXXFLAGS = -Wall -O3 -std=c++17
-CXXFILES =
+CXXFLAGS = -Wall -O3 -std=c++17 -fPIC
+CXXFILES = image.o render.o scene.o utils.o
 
 .PHONY: all clean
 
 all: $(CXXFILES)
+	$(CXX) -shared -o libshadowmap.so $(CXXFILES) $(CXXFLAGS)
 
 clean:
 	rm -f *.o

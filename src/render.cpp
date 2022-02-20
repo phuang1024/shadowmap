@@ -57,7 +57,7 @@ void build_map(Scene& scene, ShadowMap& map, Light& light) {
 
             Ray ray(light.x, light.y, light.z, dx, dy, dz);
             double dist = 1e9;
-            for (int i = 0; i < scene.objs.size(); i++) {
+            for (int i = 0; i < (int)scene.objs.size(); i++) {
                 double d = scene.objs[i].intersect(ray);
                 if (d < dist)
                     dist = d;
@@ -72,7 +72,7 @@ void build(Scene& scene, bool verbose) {
         return;
     scene._built = true;
 
-    for (int i = 0; i < scene.lights.size(); i++) {
+    for (int i = 0; i < (int)scene.lights.size(); i++) {
         if (verbose)
             std::cerr << "\rBuilding shadow maps: " << i+1 << "/" << scene.lights.size() << std::flush;
 
@@ -121,7 +121,7 @@ double render_px(Scene& scene, Image& img, int x, int y) {
     Ray ray(scene.cam_x, scene.cam_y, scene.cam_z, dx, dy, dz);
     ray.make_unit();
     double dist = 1e9;
-    for (int i = 0; i < scene.objs.size(); i++) {
+    for (int i = 0; i < (int)scene.objs.size(); i++) {
         double d = scene.objs[i].intersect(ray);
         if (d < dist)
             dist = d;
@@ -133,7 +133,7 @@ double render_px(Scene& scene, Image& img, int x, int y) {
     double hz = ray.z + ray.dz*dist;
 
     double v = scene.scene_light;
-    for (int i = 0; i < scene.lights.size(); i++) {
+    for (int i = 0; i < (int)scene.lights.size(); i++) {
         Light& light = scene.lights[i];
         double dx = hx - light.x;
         double dy = hy - light.y;
