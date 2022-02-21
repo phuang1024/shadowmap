@@ -177,8 +177,12 @@ double render_px(Scene& scene, Image& img, int x, int y) {
         if (d_real > d_map+0.3)
             continue;
 
+        // Add some randomness when transitioning from light to shadow
+        double diff = fabs(d_real - d_map);
+        double rand_fac = 1 / pow(2*diff + 1, 3);
+        double mult = 1 - rand_fac*randd();
         double power = light.power / (d_real*d_real);
-        v += power;
+        v += power * mult;
     }
 
     if (v > 255)
