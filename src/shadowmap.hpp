@@ -167,7 +167,8 @@ struct Scene {
     std::vector<ShadowMap> shadow_maps;
     int SHMAP_W, SHMAP_H;
 
-    double cam_x, cam_y, cam_z;  // camera position, always facing +y
+    double cam_x, cam_y, cam_z;  // camera position
+    double cam_pan, cam_tilt;  // 0, 0 faces +y
     double fov;   // FOV in degrees of X of camera.
     double scene_light;  // scene light intensity
     double jitter;  // randomness in sampling
@@ -176,7 +177,7 @@ struct Scene {
 
     Scene();
 
-    Scene(double cam_x, double cam_y, double cam_z, double fov);
+    Scene(double cam_x, double cam_y, double cam_z, double pan, double tilt, double fov);
 
     /**
      * Frees shadow maps.

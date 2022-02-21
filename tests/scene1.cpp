@@ -21,7 +21,7 @@
 
 
 int main() {
-    Shadowmap::Scene scene(0, -15, 3, 80);
+    Shadowmap::Scene scene(0, -15, 3, 0, 0.1, 80);
     scene.scene_light = 20;
     scene.SHMAP_W = 8192;
     scene.SHMAP_H = 4096;

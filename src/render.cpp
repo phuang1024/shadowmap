@@ -140,8 +140,8 @@ double read_shadow_map(Scene& scene, ShadowMap& map, double dx, double dy, doubl
 double render_px(Scene& scene, Image& img, int x, int y) {
     double fov_x = scene.fov / 360;
     double fov_y = fov_x * img.h / img.w;
-    double tilt = ((double)y/img.h - 0.5) * 2*PI * fov_y;
-    double pan = ((double)x/img.w - 0.5) * 2*PI * fov_x;
+    double tilt = ((double)y/img.h - 0.5) * 2*PI * fov_y + scene.cam_tilt;
+    double pan = ((double)x/img.w - 0.5) * 2*PI * fov_x + scene.cam_pan;
 
     // add randomness to tilt and pan
     tilt += scene.jitter * randd() * fov_y / img.h;

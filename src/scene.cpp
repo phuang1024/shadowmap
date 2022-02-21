@@ -46,10 +46,12 @@ Scene::Scene() {
     _init();
 }
 
-Scene::Scene(double cam_x, double cam_y, double cam_z, double fov) {
+Scene::Scene(double cam_x, double cam_y, double cam_z, double pan, double tilt, double fov) {
     this->cam_x = cam_x;
     this->cam_y = cam_y;
     this->cam_z = cam_z;
+    this->cam_pan = pan;
+    this->cam_tilt = tilt;
     this->fov = fov;
 
     _init();
