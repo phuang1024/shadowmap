@@ -168,10 +168,9 @@ struct Scene {
     int SHMAP_W, SHMAP_H;
 
     double cam_x, cam_y, cam_z;  // camera position
-    double cam_pan, cam_tilt;  // 0, 0 faces +y
-    double fov;   // FOV in degrees of X of camera.
-    double scene_light;  // scene light intensity
-    double jitter;  // randomness in sampling
+    double cam_pan, cam_tilt;  // radians. (0, 0) faces +y
+    double fov;   // FOV in degrees of X (horizontal) of camera.
+    double bg;  // background light intensity
 
     bool _built;
 

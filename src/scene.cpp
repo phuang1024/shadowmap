@@ -68,7 +68,6 @@ void Scene::_init() {
     _built = false;
     SHMAP_W = 4096;
     SHMAP_H = 2048;
-    jitter = 10;
 }
 
 void Scene::add_sphere(double x, double y, double z, double rad) {

@@ -144,44 +144,62 @@ double render_px(Scene& scene, Image& img, int x, int y) {
     double pan = ((double)x/img.w - 0.5) * 2*PI * fov_x + scene.cam_pan;
 
     // add randomness to tilt and pan
-    tilt += scene.jitter * randd() * fov_y / img.h;
-    pan += scene.jitter * randd() * fov_x / img.w;
+    tilt += 8 * randd() * fov_y / img.h;
+    pan += 8 * randd() * fov_x / img.w;
 
+    // find closest object in current pixel
     double dz = -sin(tilt);
     double dy = cos(pan) * cos(tilt);
     double dx = sin(pan) * cos(tilt);
-
     Ray ray(scene.cam_x, scene.cam_y, scene.cam_z, dx, dy, dz);
     ray.make_unit();
+
     double dist = 1e9;
+    int obj_ind = -1;
     for (int i = 0; i < (int)scene.objs.size(); i++) {
         double d = intersect(scene.objs[i], ray);
-        if (d < dist)
+        if (d < dist) {
             dist = d;
+            obj_ind = i;
+        }
     }
+    if (obj_ind == -1)
+        return scene.bg;
 
     // coordinates of hit
     double hx = ray.x + ray.dx*dist;
     double hy = ray.y + ray.dy*dist;
     double hz = ray.z + ray.dz*dist;
 
-    double v = scene.scene_light;
+    // normal vector, only dx, dy, dz of ray are used
+    Sphere& obj = scene.objs[obj_ind];
+    Ray normal(0, 0, 0, hx-obj.x, hy-obj.y, hz-obj.z);
+    normal.make_unit();
+
+    // compute lighting
+    double v = scene.bg;
     for (int i = 0; i < (int)scene.lights.size(); i++) {
+        // see if this light hits the object
         Light& light = scene.lights[i];
         double dx = hx - light.x;
         double dy = hy - light.y;
         double dz = hz - light.z;
         double d_map = read_shadow_map(scene, scene.shadow_maps[i], dx, dy, dz);
         double d_real = distance(dx, dy, dz);
-
         if (d_real-d_map > 0.3)
             continue;
 
-        // slowly go from light to dark
-        double diff = fabs(d_real - d_map);
-        double fac = std::min(fabs(diff-0.3) / 0.2, 1.0);
-        double power = light.power / (d_real*d_real);
-        v += power * fac;
+        // inverse square falloff
+        double fac_dist = 1 / pow(d_real, 2);
+
+        // dim by dot of normal and light vector
+        Ray light_ray(0, 0, 0, light.x-hx, light.y-hy, light.z-hz);
+        light_ray.make_unit();
+        double fac_norm = normal.dx*light_ray.dx + normal.dy*light_ray.dy
+            + normal.dz*light_ray.dz;  // normal dot light_ray
+        fac_norm = std::max(fac_norm, 0.0);
+
+        v += light.power * fac_dist * fac_norm;
     }
 
     if (v > 255)
