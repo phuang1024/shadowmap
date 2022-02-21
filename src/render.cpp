@@ -174,7 +174,7 @@ double render_px(Scene& scene, Image& img, int x, int y) {
         double d_map = read_shadow_map(scene, scene.shadow_maps[i], dx, dy, dz);
         double d_real = distance(dx, dy, dz);
 
-        if (d_real > d_map+0.02)
+        if (d_real > d_map+0.3)
             continue;
 
         double power = light.power / (d_real*d_real);
