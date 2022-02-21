@@ -21,13 +21,14 @@
 
 
 int main() {
-    Shadowmap::Scene scene(0, -10, 3, 80);
+    Shadowmap::Scene scene(0, -15, 3, 80);
     scene.scene_light = 20;
     scene.SHMAP_W = 8192;
     scene.SHMAP_H = 4096;
     scene.add_sphere(0, 0, 0, 2);
     scene.add_sphere(0, 0, 3, 1);
     scene.add_sphere(-1, 0, 1, 1);
+    scene.add_sphere(0, 0, -1002, 1000);   // this sphere is like the ground
     scene.add_light(4, -3, 6, 6000);
 
     std::ofstream fp("scene1.img");
