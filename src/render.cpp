@@ -174,15 +174,14 @@ double render_px(Scene& scene, Image& img, int x, int y) {
         double d_map = read_shadow_map(scene, scene.shadow_maps[i], dx, dy, dz);
         double d_real = distance(dx, dy, dz);
 
-        if (d_real > d_map+0.3)
+        if (d_real-d_map > 0.3)
             continue;
 
-        // Add some randomness when transitioning from light to shadow
+        // slowly go from light to dark
         double diff = fabs(d_real - d_map);
-        double rand_fac = 1 / pow(2*diff + 1, 3);
-        double mult = 1 - rand_fac*randd();
+        double fac = std::min(fabs(diff-0.3) / 0.2, 1.0);
         double power = light.power / (d_real*d_real);
-        v += power * mult;
+        v += power * fac;
     }
 
     if (v > 255)
