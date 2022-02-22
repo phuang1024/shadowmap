@@ -116,6 +116,36 @@ struct ShadowMap {
 
 
 /**
+ * 3D vector of doubles.
+ */
+struct Vec3 {
+    double x, y, z;
+
+    /**
+     * Initialize to 0
+     */
+    Vec3();
+
+    Vec3(double x, double y, double z);
+
+    Vec3(const Vec3& v);
+
+    double magnitude() const;
+
+    Vec3 unit() const;
+
+    Vec3 add(const Vec3& v) const;
+
+    Vec3 sub(const Vec3& v) const;
+
+    Vec3 mul(double s) const;
+
+    Vec3 div(double s) const;
+
+    double dot(const Vec3& v) const;
+};
+
+/**
  * Vector with starting point.
  */
 struct Ray {

@@ -25,23 +25,6 @@
 namespace Shadowmap {
 
 
-Ray::Ray(double x, double y, double z, double dx, double dy, double dz) {
-    this->x = x;
-    this->y = y;
-    this->z = z;
-    this->dx = dx;
-    this->dy = dy;
-    this->dz = dz;
-}
-
-void Ray::make_unit() {
-    double dist = distance(dx, dy, dz);
-    dx /= dist;
-    dy /= dist;
-    dz /= dist;
-}
-
-
 /**
  * Position of ray at time t using its direction.
  */
