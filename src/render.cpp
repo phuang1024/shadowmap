@@ -67,11 +67,9 @@ void build_map(Scene& scene, ShadowMap& map, Light& light) {
             double tilt = ((double)y/scene.SHMAP_H - 0.5) * PI;
             double pan = ((double)x/scene.SHMAP_W - 0.5) * PI * 2;
 
-            double dz = -sin(tilt);
-            double dy = cos(pan) * cos(tilt);
-            double dx = sin(pan) * cos(tilt);
+            Vec3 delta(sin(pan)*cos(tilt), cos(pan)*cos(tilt), -sin(tilt));
+            Ray ray(light.loc.x, light.loc.y, light.loc.z, delta.x, delta.y, delta.z);
 
-            Ray ray(light.loc.x, light.loc.y, light.loc.z, dx, dy, dz);
             double dist = 1e9;
             for (int i = 0; i < (int)scene.objs.size(); i++) {
                 double d = intersect(scene.objs[i], ray);
@@ -131,10 +129,8 @@ double render_px(Scene& scene, Image& img, int x, int y) {
     pan += 8 * randd() * fov_x / img.w;
 
     // find closest object in current pixel
-    double dz = -sin(tilt);
-    double dy = cos(pan) * cos(tilt);
-    double dx = sin(pan) * cos(tilt);
-    Ray ray(scene.cam_loc.x, scene.cam_loc.y, scene.cam_loc.z, dx, dy, dz);
+    Vec3 delta(sin(pan)*cos(tilt), cos(pan)*cos(tilt), -sin(tilt));
+    Ray ray(scene.cam_loc.x, scene.cam_loc.y, scene.cam_loc.z, delta.x, delta.y, delta.z);
     ray.make_unit();
 
     double dist = 1e9;
@@ -150,20 +146,18 @@ double render_px(Scene& scene, Image& img, int x, int y) {
         return scene.bg;
 
     // coordinates of hit
-    double hx = ray.x + ray.dx*dist;
-    double hy = ray.y + ray.dy*dist;
-    double hz = ray.z + ray.dz*dist;
+    Vec3 hit(ray.x+ray.dx*dist, ray.y+ray.dy*dist, ray.z+ray.dz*dist);
 
     // normal vector, only dx, dy, dz of ray are used
     Sphere& obj = scene.objs[obj_ind];
-    Vec3 normal = Vec3(hx-obj.loc.x, hy-obj.loc.y, hz-obj.loc.z).unit();
+    Vec3 normal = hit.sub(obj.loc).unit();
 
     // compute lighting
     double v = scene.bg;
     for (int i = 0; i < (int)scene.lights.size(); i++) {
         // see if this light hits the object
         Light& light = scene.lights[i];
-        Vec3 delta(hx-light.loc.x, hy-light.loc.y, hz-light.loc.z);  // vector from light to hit
+        Vec3 delta = hit.sub(light.loc);
         double d_map = read_shadow_map(scene, scene.shadow_maps[i], delta);
         double d_real = delta.magnitude();
         if (d_real-d_map > 0.3)
@@ -173,8 +167,8 @@ double render_px(Scene& scene, Image& img, int x, int y) {
         double fac_dist = 1 / pow(d_real, 2);
 
         // dim by dot of normal and light vector
-        Vec3 light_ray(light.loc.x-hx, light.loc.y-hy, light.loc.z-hz);
-        double fac_norm = light_ray.unit().dot(normal);
+        Vec3 light_ray = light.loc.sub(hit).unit();
+        double fac_norm = light_ray.dot(normal);
         fac_norm = std::max(fac_norm, 0.0);
 
         v += light.power * fac_dist * fac_norm;
