@@ -20,6 +20,7 @@
 #pragma once
 
 #include <fstream>
+#include <string>
 #include <vector>
 
 
@@ -171,16 +172,32 @@ struct Ray {
 };
 
 
+struct Face {
+    Vec3 p1, p2, p3;
+    Vec3 normal;
+
+    Face(const Vec3& p1, const Vec3& p2, const Vec3& p3, const Vec3& normal);
+};
+
 /**
- * Sphere object.
+ * Mesh object. Can read binary STL file.
  */
-struct Sphere {
+struct Mesh {
     Vec3 loc;    // location
-    double rad;  // radius
+    std::vector<Face> faces;
 
-    Sphere(double x, double y, double z, double rad);
+    Mesh();
 
-    Sphere(const Vec3& loc, double rad);
+    Mesh(const Vec3& loc);
+
+    Mesh(const Vec3& loc, const std::string& filename);
+
+    Mesh(const std::string& filename);
+
+    /**
+     * Clears faces and reads from file.
+     */
+    void read_stl(std::ifstream& fp);
 };
 
 /**
@@ -201,7 +218,7 @@ struct Light {
  * Also camera parameters.
  */
 struct Scene {
-    std::vector<Sphere> objs;
+    std::vector<Mesh> objs;
     std::vector<Light> lights;
     std::vector<ShadowMap> shadow_maps;
     int SHMAP_W, SHMAP_H;
@@ -226,11 +243,6 @@ struct Scene {
      * Initialize default values. Called from all constructors.
      */
     void _init();
-
-    /**
-     * Add a sphere to the scene.
-     */
-    void add_sphere(double x, double y, double z, double rad);
 
     /**
      * Add a light to the scene.

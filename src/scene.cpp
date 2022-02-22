@@ -24,17 +24,6 @@
 namespace Shadowmap {
 
 
-Sphere::Sphere(double x, double y, double z, double rad) {
-    loc = Vec3(x, y, z);
-    this->rad = rad;
-}
-
-Sphere::Sphere(const Vec3& loc, double rad) {
-    this->loc = loc;
-    this->rad = rad;
-}
-
-
 Light::Light(double x, double y, double z, double power) {
     loc = Vec3(x, y, z);
     this->power = power;
@@ -72,10 +61,6 @@ void Scene::_init() {
     _built = false;
     SHMAP_W = 4096;
     SHMAP_H = 2048;
-}
-
-void Scene::add_sphere(double x, double y, double z, double rad) {
-    objs.push_back(Sphere(x, y, z, rad));
 }
 
 void Scene::add_light(double x, double y, double z, double power) {
