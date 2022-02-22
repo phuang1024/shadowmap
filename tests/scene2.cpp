@@ -36,12 +36,12 @@ int main() {
     Shadowmap::build(scene, true);
 
     int frame = 0;
-    for (double z = 0; z < 2*PI; z += 0.07) {
+    for (double z = 0; z < 2*PI; z += 0.05) {
         std::cerr << "frame " << frame << std::endl;
 
         std::string fname = "scene2_frame" + std::to_string(frame) + ".img";
         std::ofstream fp(fname);
-        Shadowmap::Image img(1280, 720);
+        Shadowmap::Image img(1920, 1080);
 
         scene.cam_x = 15 * sin(z);
         scene.cam_y = -15 * cos(z);
