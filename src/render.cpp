@@ -106,9 +106,9 @@ void build(Scene& scene, bool verbose) {
  * Delta values are relative to the light.
  * Delta values are unit vector.
  */
-double read_shadow_map(Scene& scene, ShadowMap& map, double dx, double dy, double dz) {
-    double tilt = atan2(-dz, distance(dx, dy));
-    double pan = atan2(dx, dy);
+double read_shadow_map(Scene& scene, ShadowMap& map, Vec3 delta) {
+    double tilt = atan2(-delta.z, distance(delta.x, delta.y));
+    double pan = atan2(delta.x, delta.y);
     int y = (tilt/PI + 0.5) * scene.SHMAP_H;
     int x = (pan/PI/2 + 0.5) * scene.SHMAP_W;
 
@@ -156,19 +156,16 @@ double render_px(Scene& scene, Image& img, int x, int y) {
 
     // normal vector, only dx, dy, dz of ray are used
     Sphere& obj = scene.objs[obj_ind];
-    Ray normal(0, 0, 0, hx-obj.x, hy-obj.y, hz-obj.z);
-    normal.make_unit();
+    Vec3 normal = Vec3(hx-obj.x, hy-obj.y, hz-obj.z).unit();
 
     // compute lighting
     double v = scene.bg;
     for (int i = 0; i < (int)scene.lights.size(); i++) {
         // see if this light hits the object
         Light& light = scene.lights[i];
-        double dx = hx - light.x;
-        double dy = hy - light.y;
-        double dz = hz - light.z;
-        double d_map = read_shadow_map(scene, scene.shadow_maps[i], dx, dy, dz);
-        double d_real = distance(dx, dy, dz);
+        Vec3 delta(hx-light.x, hy-light.y, hz-light.z);  // vector from light to hit
+        double d_map = read_shadow_map(scene, scene.shadow_maps[i], delta);
+        double d_real = delta.magnitude();
         if (d_real-d_map > 0.3)
             continue;
 
@@ -176,10 +173,8 @@ double render_px(Scene& scene, Image& img, int x, int y) {
         double fac_dist = 1 / pow(d_real, 2);
 
         // dim by dot of normal and light vector
-        Ray light_ray(0, 0, 0, light.x-hx, light.y-hy, light.z-hz);
-        light_ray.make_unit();
-        double fac_norm = normal.dx*light_ray.dx + normal.dy*light_ray.dy
-            + normal.dz*light_ray.dz;  // normal dot light_ray
+        Vec3 light_ray(light.x-hx, light.y-hy, light.z-hz);
+        double fac_norm = light_ray.unit().dot(normal);
         fac_norm = std::max(fac_norm, 0.0);
 
         v += light.power * fac_dist * fac_norm;
