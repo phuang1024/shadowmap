@@ -149,20 +149,12 @@ struct Vec3 {
  * Vector with starting point.
  */
 struct Ray {
-    double x, y, z;     // starting point
-    double dx, dy, dz;  // direction
+    Vec3 pt;  // starting point
+    Vec3 dir;
 
     Ray(double x, double y, double z, double dx, double dy, double dz);
 
-    /**
-     * Change dx, dy, dz to a unit vector.
-     */
-    void make_unit();
-
-    /**
-     * Magnitude of direction vector.
-     */
-    double magnitude();
+    Ray(const Vec3& pt, const Vec3& dir);
 };
 
 

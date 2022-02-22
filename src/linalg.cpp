@@ -70,19 +70,13 @@ double Vec3::dot(const Vec3& v) const {
 
 
 Ray::Ray(double x, double y, double z, double dx, double dy, double dz) {
-    this->x = x;
-    this->y = y;
-    this->z = z;
-    this->dx = dx;
-    this->dy = dy;
-    this->dz = dz;
+    pt = Vec3(x, y, z);
+    dir = Vec3(dx, dy, dz);
 }
 
-void Ray::make_unit() {
-    double dist = distance(dx, dy, dz);
-    dx /= dist;
-    dy /= dist;
-    dz /= dist;
+Ray::Ray(const Vec3& pt, const Vec3& dir) {
+    this->pt = pt;
+    this->dir = dir;
 }
 
 

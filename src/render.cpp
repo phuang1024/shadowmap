@@ -26,25 +26,16 @@ namespace Shadowmap {
 
 
 /**
- * Position of ray at time t using its direction.
- */
-double t_dist(Ray& ray, double t) {
-    return distance(ray.dx*t, ray.dy*t, ray.dz*t);
-}
-
-/**
  * Intersect sphere with a ray.
  * If no intersection, returns arbitrarily large number.
  * Else, smallest distance to the intersection.
  */
 double intersect(Sphere& sph, Ray& ray) {
-    double xc = ray.x - sph.loc.x;
-    double yc = ray.y - sph.loc.y;
-    double zc = ray.z - sph.loc.z;
+    Vec3 consts = ray.pt.sub(sph.loc);
 
-    double a = pow(ray.dx, 2) + pow(ray.dy, 2) + pow(ray.dz, 2);
-    double b = 2 * (ray.dx*xc + ray.dy*yc + ray.dz*zc);
-    double c = pow(xc, 2) + pow(yc, 2) + pow(zc, 2) - pow(sph.rad, 2);
+    double a = pow(ray.dir.magnitude(), 2);
+    double b = 2 * (ray.dir.x*consts.x + ray.dir.y*consts.y + ray.dir.z*consts.z);
+    double c = pow(consts.magnitude(), 2) - pow(sph.rad, 2);
 
     double discr = pow(b, 2) - 4*a*c;
     if (discr < 0)
@@ -52,8 +43,8 @@ double intersect(Sphere& sph, Ray& ray) {
 
     double t1 = (-b + sqrt(discr)) / (2*a);
     double t2 = (-b - sqrt(discr)) / (2*a);
-    double d1 = (t1 < 0) ? 1e9 : t_dist(ray, t1);
-    double d2 = (t2 < 0) ? 1e9 : t_dist(ray, t2);
+    double d1 = (t1 < 0) ? 1e9 : ray.dir.mul(t1).magnitude();
+    double d2 = (t2 < 0) ? 1e9 : ray.dir.mul(t2).magnitude();
 
     return std::min(d1, d2);
 }
@@ -131,7 +122,7 @@ double render_px(Scene& scene, Image& img, int x, int y) {
     // find closest object in current pixel
     Vec3 delta(sin(pan)*cos(tilt), cos(pan)*cos(tilt), -sin(tilt));
     Ray ray(scene.cam_loc.x, scene.cam_loc.y, scene.cam_loc.z, delta.x, delta.y, delta.z);
-    ray.make_unit();
+    ray.dir = ray.dir.unit();
 
     double dist = 1e9;
     int obj_ind = -1;
@@ -146,7 +137,7 @@ double render_px(Scene& scene, Image& img, int x, int y) {
         return scene.bg;
 
     // coordinates of hit
-    Vec3 hit(ray.x+ray.dx*dist, ray.y+ray.dy*dist, ray.z+ray.dz*dist);
+    Vec3 hit = ray.pt.add(ray.dir.mul(dist));
 
     // normal vector, only dx, dy, dz of ray are used
     Sphere& obj = scene.objs[obj_ind];
