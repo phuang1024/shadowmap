@@ -25,17 +25,23 @@ namespace Shadowmap {
 
 
 Sphere::Sphere(double x, double y, double z, double rad) {
-    this->x = x;
-    this->y = y;
-    this->z = z;
+    loc = Vec3(x, y, z);
+    this->rad = rad;
+}
+
+Sphere::Sphere(const Vec3& loc, double rad) {
+    this->loc = loc;
     this->rad = rad;
 }
 
 
 Light::Light(double x, double y, double z, double power) {
-    this->x = x;
-    this->y = y;
-    this->z = z;
+    loc = Vec3(x, y, z);
+    this->power = power;
+}
+
+Light::Light(const Vec3& loc, double power) {
+    this->loc = loc;
     this->power = power;
 }
 

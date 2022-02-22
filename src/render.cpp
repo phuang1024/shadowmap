@@ -38,9 +38,9 @@ double t_dist(Ray& ray, double t) {
  * Else, smallest distance to the intersection.
  */
 double intersect(Sphere& sph, Ray& ray) {
-    double xc = ray.x - sph.x;
-    double yc = ray.y - sph.y;
-    double zc = ray.z - sph.z;
+    double xc = ray.x - sph.loc.x;
+    double yc = ray.y - sph.loc.y;
+    double zc = ray.z - sph.loc.z;
 
     double a = pow(ray.dx, 2) + pow(ray.dy, 2) + pow(ray.dz, 2);
     double b = 2 * (ray.dx*xc + ray.dy*yc + ray.dz*zc);
@@ -71,7 +71,7 @@ void build_map(Scene& scene, ShadowMap& map, Light& light) {
             double dy = cos(pan) * cos(tilt);
             double dx = sin(pan) * cos(tilt);
 
-            Ray ray(light.x, light.y, light.z, dx, dy, dz);
+            Ray ray(light.loc.x, light.loc.y, light.loc.z, dx, dy, dz);
             double dist = 1e9;
             for (int i = 0; i < (int)scene.objs.size(); i++) {
                 double d = intersect(scene.objs[i], ray);
@@ -156,14 +156,14 @@ double render_px(Scene& scene, Image& img, int x, int y) {
 
     // normal vector, only dx, dy, dz of ray are used
     Sphere& obj = scene.objs[obj_ind];
-    Vec3 normal = Vec3(hx-obj.x, hy-obj.y, hz-obj.z).unit();
+    Vec3 normal = Vec3(hx-obj.loc.x, hy-obj.loc.y, hz-obj.loc.z).unit();
 
     // compute lighting
     double v = scene.bg;
     for (int i = 0; i < (int)scene.lights.size(); i++) {
         // see if this light hits the object
         Light& light = scene.lights[i];
-        Vec3 delta(hx-light.x, hy-light.y, hz-light.z);  // vector from light to hit
+        Vec3 delta(hx-light.loc.x, hy-light.loc.y, hz-light.loc.z);  // vector from light to hit
         double d_map = read_shadow_map(scene, scene.shadow_maps[i], delta);
         double d_real = delta.magnitude();
         if (d_real-d_map > 0.3)
@@ -173,7 +173,7 @@ double render_px(Scene& scene, Image& img, int x, int y) {
         double fac_dist = 1 / pow(d_real, 2);
 
         // dim by dot of normal and light vector
-        Vec3 light_ray(light.x-hx, light.y-hy, light.z-hz);
+        Vec3 light_ray(light.loc.x-hx, light.loc.y-hy, light.loc.z-hz);
         double fac_norm = light_ray.unit().dot(normal);
         fac_norm = std::max(fac_norm, 0.0);
 

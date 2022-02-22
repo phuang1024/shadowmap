@@ -170,20 +170,24 @@ struct Ray {
  * Sphere object.
  */
 struct Sphere {
-    double x, y, z;  // center
-    double rad;      // radius
+    Vec3 loc;    // location
+    double rad;  // radius
 
     Sphere(double x, double y, double z, double rad);
+
+    Sphere(const Vec3& loc, double rad);
 };
 
 /**
  * Point light source.
  */
 struct Light {
-    double x, y, z;
+    Vec3 loc;  // location
     double power;
 
     Light(double x, double y, double z, double power);
+
+    Light(const Vec3& loc, double power);
 };
 
 
