@@ -41,15 +41,13 @@ Light::Light(double x, double y, double z, double power) {
 
 
 Scene::Scene() {
-    cam_x = cam_y = cam_z = 0;
+    cam_loc = Vec3(0, 0, 0);
     fov = 60;
     _init();
 }
 
 Scene::Scene(double cam_x, double cam_y, double cam_z, double pan, double tilt, double fov) {
-    this->cam_x = cam_x;
-    this->cam_y = cam_y;
-    this->cam_z = cam_z;
+    cam_loc = Vec3(cam_x, cam_y, cam_z);
     this->cam_pan = pan;
     this->cam_tilt = tilt;
     this->fov = fov;

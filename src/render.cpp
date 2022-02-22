@@ -134,7 +134,7 @@ double render_px(Scene& scene, Image& img, int x, int y) {
     double dz = -sin(tilt);
     double dy = cos(pan) * cos(tilt);
     double dx = sin(pan) * cos(tilt);
-    Ray ray(scene.cam_x, scene.cam_y, scene.cam_z, dx, dy, dz);
+    Ray ray(scene.cam_loc.x, scene.cam_loc.y, scene.cam_loc.z, dx, dy, dz);
     ray.make_unit();
 
     double dist = 1e9;
