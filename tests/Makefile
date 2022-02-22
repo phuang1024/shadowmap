@@ -17,10 +17,12 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+SCENE ?= scene1
+
 CXX = g++
 CXXFLAGS = -Wall -O3 -std=c++17 -I../src -L../src -lshadowmap
 
-.PHONY: scene1
+.PHONY: all
 
-scene1:
-	$(CXX) -o scene1.out scene1.cpp $(CXXFLAGS)
+all:
+	$(CXX) -o $(SCENE).out $(SCENE).cpp $(CXXFLAGS)
