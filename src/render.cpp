@@ -33,9 +33,9 @@ namespace Shadowmap {
 double intersect(Sphere& sph, Ray& ray) {
     Vec3 consts = ray.pt.sub(sph.loc);
 
-    double a = pow(ray.dir.magnitude(), 2);
-    double b = 2 * (ray.dir.x*consts.x + ray.dir.y*consts.y + ray.dir.z*consts.z);
-    double c = pow(consts.magnitude(), 2) - pow(sph.rad, 2);
+    double a = ray.dir.sqsum();
+    double b = 2 * ray.dir.mul(consts).sum();
+    double c = consts.sqsum() - pow(sph.rad, 2);
 
     double discr = pow(b, 2) - 4*a*c;
     if (discr < 0)
@@ -59,7 +59,7 @@ void build_map(Scene& scene, ShadowMap& map, Light& light) {
             double pan = ((double)x/scene.SHMAP_W - 0.5) * PI * 2;
 
             Vec3 delta(sin(pan)*cos(tilt), cos(pan)*cos(tilt), -sin(tilt));
-            Ray ray(light.loc.x, light.loc.y, light.loc.z, delta.x, delta.y, delta.z);
+            Ray ray(light.loc, delta);
 
             double dist = 1e9;
             for (int i = 0; i < (int)scene.objs.size(); i++) {
@@ -121,8 +121,7 @@ double render_px(Scene& scene, Image& img, int x, int y) {
 
     // find closest object in current pixel
     Vec3 delta(sin(pan)*cos(tilt), cos(pan)*cos(tilt), -sin(tilt));
-    Ray ray(scene.cam_loc.x, scene.cam_loc.y, scene.cam_loc.z, delta.x, delta.y, delta.z);
-    ray.dir = ray.dir.unit();
+    Ray ray(scene.cam_loc, delta.unit());
 
     double dist = 1e9;
     int obj_ind = -1;

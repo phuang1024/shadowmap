@@ -43,6 +43,14 @@ double Vec3::magnitude() const {
     return distance(x, y, z);
 }
 
+double Vec3::sum() const {
+    return x + y + z;
+}
+
+double Vec3::sqsum() const {
+    return x*x + y*y + z*z;
+}
+
 Vec3 Vec3::unit() const {
     double m = magnitude();
     return Vec3(x/m, y/m, z/m);
@@ -66,6 +74,10 @@ Vec3 Vec3::div(double s) const {
 
 double Vec3::dot(const Vec3& v) const {
     return x*v.x + y*v.y + z*v.z;
+}
+
+Vec3 Vec3::mul(const Vec3& v) const {
+    return Vec3(x*v.x, y*v.y, z*v.z);
 }
 
 

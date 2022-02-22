@@ -132,6 +132,14 @@ struct Vec3 {
 
     double magnitude() const;
 
+    double sum() const;
+
+    /**
+     * Sum of squares of components.
+     * x**2 + y**2 + z**2
+     */
+    double sqsum() const;
+
     Vec3 unit() const;
 
     Vec3 add(const Vec3& v) const;
@@ -139,6 +147,11 @@ struct Vec3 {
     Vec3 sub(const Vec3& v) const;
 
     Vec3 mul(double s) const;
+
+    /**
+     * Element wise multiplication.
+     */
+    Vec3 mul(const Vec3& v) const;
 
     Vec3 div(double s) const;
 
