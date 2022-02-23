@@ -68,6 +68,10 @@ Vec3 Vec3::mul(double s) const {
     return Vec3(x*s, y*s, z*s);
 }
 
+Vec3 Vec3::mul(const Vec3& v) const {
+    return Vec3(x*v.x, y*v.y, z*v.z);
+}
+
 Vec3 Vec3::div(double s) const {
     return Vec3(x/s, y/s, z/s);
 }
@@ -76,8 +80,12 @@ double Vec3::dot(const Vec3& v) const {
     return x*v.x + y*v.y + z*v.z;
 }
 
-Vec3 Vec3::mul(const Vec3& v) const {
-    return Vec3(x*v.x, y*v.y, z*v.z);
+Vec3 Vec3::cross(const Vec3& v) const {
+    double x = this->y*v.z - this->z*v.y;
+    double y = this->z*v.x - this->x*v.z;
+    double z = this->x*v.y - this->y*v.x;
+
+    return Vec3(x, y, z);
 }
 
 

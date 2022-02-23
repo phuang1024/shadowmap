@@ -47,6 +47,12 @@ double distance(double dx, double dy, double dz);
 int bounds(int v, int min, int max);
 
 /**
+ * True if positive.
+ * False if 0 or negative.
+ */
+bool sign(double v);
+
+/**
  * Random from 0 to 1
  */
 double randd();
@@ -157,6 +163,8 @@ struct Vec3 {
     Vec3 div(double s) const;
 
     double dot(const Vec3& v) const;
+
+    Vec3 cross(const Vec3& v) const;
 };
 
 /**

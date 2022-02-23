@@ -59,8 +59,8 @@ Scene::~Scene() {
 
 void Scene::_init() {
     _built = false;
-    SHMAP_W = 4096;
-    SHMAP_H = 2048;
+    SHMAP_W = 1024;
+    SHMAP_H = 1024;
 }
 
 void Scene::add_light(double x, double y, double z, double power) {

@@ -17,32 +17,22 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 
-#include <cmath>
 #include "shadowmap.hpp"
 
 
-namespace Shadowmap {
+int main() {
+    Shadowmap::Scene scene(0, -15, 3, 0, 0.1, 80);
+    scene.bg = 20;
 
+    Shadowmap::Mesh m("monkey.stl");
+    scene.objs.push_back(m);
+    scene.add_light(4, -3, 6, 6000);
 
-double distance(double dx, double dy, double dz) {
-    return sqrt(pow(dx, 2) + pow(dy, 2) + pow(dz, 2));
+    std::ofstream fp("scene3.img");
+    Shadowmap::Image img(1920, 1080);
+
+    Shadowmap::build(scene, true);
+    Shadowmap::render(scene, img, 8, true);
+
+    img.write(fp);
 }
-
-double distance(double dx, double dy) {
-    return sqrt(pow(dx, 2) + pow(dy, 2));
-}
-
-int bounds(int v, int min, int max) {
-    return std::min(std::max(v, min), max);
-}
-
-bool sign(double v) {
-    return v > 0;
-}
-
-double randd() {
-    return (rand() % (int)1e9) / 1e9;
-}
-
-
-}  // namespace Shadowmap
