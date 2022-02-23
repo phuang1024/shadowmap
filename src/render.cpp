@@ -151,8 +151,8 @@ double render_px(Scene& scene, Image& img, int x, int y) {
     double pan = ((double)x/img.w - 0.5) * 2*PI * fov_x + scene.cam_pan;
 
     // add randomness to tilt and pan
-    tilt += 8 * randd() * fov_y / img.h;
-    pan += 8 * randd() * fov_x / img.w;
+    tilt += 3 * randd() * fov_y / img.h;
+    pan += 3 * randd() * fov_x / img.w;
 
     // find closest object in current pixel
     Vec3 delta(sin(pan)*cos(tilt), cos(pan)*cos(tilt), -sin(tilt));

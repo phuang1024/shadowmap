@@ -32,7 +32,7 @@ int main() {
     Shadowmap::Image img(1920, 1080);
 
     Shadowmap::build(scene, true);
-    Shadowmap::render(scene, img, 8, true);
+    Shadowmap::render(scene, img, 1, true);
 
     img.write(fp);
 }
