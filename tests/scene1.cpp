@@ -21,21 +21,18 @@
 
 
 int main() {
-    Shadowmap::Scene scene(0, -15, 3, 0, 0.1, 80);
+    Shadowmap::Scene scene(0, -8, 4, 0, 0.5, 60);
     scene.bg = 20;
-    scene.SHMAP_W = 8192;
-    scene.SHMAP_H = 4096;
-    scene.add_sphere(0, 0, 0, 2);
-    scene.add_sphere(0, 0, 3, 1);
-    scene.add_sphere(-1, 0, 1, 1);
-    scene.add_sphere(0, 0, -1002, 1000);   // this sphere is like the ground
-    scene.add_light(4, -3, 6, 6000);
 
-    std::ofstream fp("scene1.img");
-    Shadowmap::Image img(1920, 1080);
+    Shadowmap::Mesh m("monkey.stl");
+    scene.objs.push_back(m);
+    scene.add_light(4, -5, 6, 6000);
+
+    std::ofstream fp("scene3.img");
+    Shadowmap::Image img(1280, 720);
 
     Shadowmap::build(scene, true);
-    Shadowmap::render(scene, img, 8, true);
+    Shadowmap::render(scene, img, 1, true);
 
     img.write(fp);
 }
