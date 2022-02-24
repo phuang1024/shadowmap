@@ -24,7 +24,7 @@ int main() {
     Shadowmap::Scene scene(0, -15, 3, 0, 0.1, 80);
     scene.bg = 20;
 
-    Shadowmap::Mesh m("monkey.stl");
+    Shadowmap::Mesh m("cylinder.stl");
     scene.objs.push_back(m);
     scene.add_light(4, -3, 6, 6000);
 
@@ -32,7 +32,7 @@ int main() {
     Shadowmap::Image img(1920, 1080);
 
     Shadowmap::build(scene, true);
-    Shadowmap::render(scene, img, 1, true);
+    Shadowmap::render(scene, img, 2, true);
 
     img.write(fp);
 }

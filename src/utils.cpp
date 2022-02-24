@@ -37,7 +37,7 @@ int bounds(int v, int min, int max) {
 }
 
 bool sign(double v) {
-    return v > 0;
+    return v >= 0;
 }
 
 double randd() {

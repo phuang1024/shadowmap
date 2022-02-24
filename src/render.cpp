@@ -40,7 +40,7 @@ struct Intersect {
  * From https://stackoverflow.com/q/42740765/
  */
 double signed_volume(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d) {
-    return (1.0/6.0) * b.sub(a).cross(c.sub(a)).dot(d.sub(a));
+    return b.sub(a).cross(c.sub(a)).dot(d.sub(a)) / 6.0;
 }
 
 /**
@@ -50,15 +50,15 @@ double signed_volume(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d)
  *
  * Formula from https://stackoverflow.com/q/42740765/
  */
-Intersect intersect(Mesh& mesh, Ray& ray) {
+Intersect intersect(Mesh& mesh, Ray& ray, bool asdf = false) {
     Intersect ret;
     ret.dist = 1e9;
 
     for (int i = 0; i < (int)mesh.faces.size(); i++) {
         Face& f = mesh.faces[i];
 
-        Vec3 q1 = ray.pt.sub(ray.dir.mul(1e8));
-        Vec3 q2 = ray.pt.add(ray.dir.mul(1e8));
+        Vec3 q1 = ray.pt.sub(ray.dir.mul(1e4));
+        Vec3 q2 = ray.pt.add(ray.dir.mul(1e4));
 
         bool a = sign(signed_volume(q1, f.p1, f.p2, f.p3));
         bool b = sign(signed_volume(q2, f.p1, f.p2, f.p3));
@@ -66,7 +66,7 @@ Intersect intersect(Mesh& mesh, Ray& ray) {
         bool d = sign(signed_volume(q1, q2, f.p2, f.p3));
         bool e = sign(signed_volume(q1, q2, f.p3, f.p1));
 
-        if (a != b && c == d && d == e) {  // there is intersection
+        if ((a != b) && (c == d) && (d == e)) {  // there is intersection
             Vec3 n = f.p2.sub(f.p1).cross(f.p3.sub(f.p1));
             double t = -1 * q1.sub(f.p1).dot(n) / q2.sub(q1).dot(n);
             Vec3 pt = q1.add(q2.sub(q1).mul(t));
@@ -88,7 +88,6 @@ Intersect intersect(Mesh& mesh, Ray& ray) {
  */
 void build_map(Scene& scene, ShadowMap& map, Light& light) {
     for (int y = 0; y < scene.SHMAP_H; y++) {
-        std::cerr << y << std::endl;
         for (int x = 0; x < scene.SHMAP_W; x++) {
             double tilt = ((double)y/scene.SHMAP_H - 0.5) * PI;
             double pan = ((double)x/scene.SHMAP_W - 0.5) * PI * 2;
@@ -151,8 +150,8 @@ double render_px(Scene& scene, Image& img, int x, int y) {
     double pan = ((double)x/img.w - 0.5) * 2*PI * fov_x + scene.cam_pan;
 
     // add randomness to tilt and pan
-    tilt += 3 * randd() * fov_y / img.h;
-    pan += 3 * randd() * fov_x / img.w;
+    tilt += randd() * fov_y / img.h;
+    pan += randd() * fov_x / img.w;
 
     // find closest object in current pixel
     Vec3 delta(sin(pan)*cos(tilt), cos(pan)*cos(tilt), -sin(tilt));
@@ -179,7 +178,7 @@ double render_px(Scene& scene, Image& img, int x, int y) {
         Vec3 delta = hit.sub(light.loc);
         double d_map = read_shadow_map(scene, scene.shadow_maps[i], delta);
         double d_real = delta.magnitude();
-        if (d_real-d_map > 0.3)
+        if (d_real-d_map > 0.1)
             continue;
 
         // inverse square falloff
