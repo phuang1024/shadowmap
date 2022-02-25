@@ -99,9 +99,6 @@ double render_px(Scene& scene, Image& img, int x, int y) {
 }
 
 void render(Scene& scene, Image& img, int samples, bool verbose) {
-    if (!scene._built)
-        build(scene, verbose);
-
     int last_percent = -1;  // for verbose
     for (int y = 0; y < img.h; y++) {
         for (int x = 0; x < img.w; x++) {

@@ -26,48 +26,19 @@ namespace Shadowmap {
 
 
 /**
- * Signed volume.
- * From https://stackoverflow.com/q/42740765/
+ * Preprocess the scene.
+ * * Face._radius
  */
-double signed_volume(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d) {
-    return b.sub(a).cross(c.sub(a)).dot(d.sub(a)) / 6.0;
-}
-
-/**
- * Formula from https://stackoverflow.com/q/42740765/
- */
-Intersect intersect(Mesh& mesh, Ray& ray) {
-    Intersect ret;
-    ret.dist = 1e9;
-
-    for (int i = 0; i < (int)mesh.faces.size(); i++) {
-        Face& f = mesh.faces[i];
-
-        Vec3 q1 = ray.pt.sub(ray.dir.mul(1e4));
-        Vec3 q2 = ray.pt.add(ray.dir.mul(1e4));
-
-        bool a = sign(signed_volume(q1, f.p1, f.p2, f.p3));
-        bool b = sign(signed_volume(q2, f.p1, f.p2, f.p3));
-        bool c = sign(signed_volume(q1, q2, f.p1, f.p2));
-        bool d = sign(signed_volume(q1, q2, f.p2, f.p3));
-        bool e = sign(signed_volume(q1, q2, f.p3, f.p1));
-
-        if ((a != b) && (c == d) && (d == e)) {  // there is intersection
-            Vec3 n = f.p2.sub(f.p1).cross(f.p3.sub(f.p1));
-            double t = -1 * q1.sub(f.p1).dot(n) / q2.sub(q1).dot(n);
-            Vec3 pt = q1.add(q2.sub(q1).mul(t));
-            double dist = pt.sub(ray.pt).magnitude();
-
-            if (dist < ret.dist) {
-                ret.dist = dist;
-                ret.pos = pt;
-                ret.normal = f.normal;
-            }
+void preprocess(Scene& scene) {
+    for (Mesh& obj: scene.objs) {
+        for (Face& face: obj.faces) {
+            Face copy = face;
+            copy._radius = std::max(distance(copy.p1, copy.p2), distance(copy.p1, copy.p3));
+            scene._faces.push_back(copy);
         }
     }
-
-    return ret;
 }
+
 
 /**
  * Builds a shadow map for light and stores in map.
@@ -102,10 +73,9 @@ void build_map(Scene& scene, ShadowMap& map, Light& light, int index = 0, bool v
     }
 }
 
+
 void build(Scene& scene, bool verbose) {
-    if (scene._built)
-        return;
-    scene._built = true;
+    preprocess(scene);
 
     for (int i = 0; i < (int)scene.lights.size(); i++) {
         scene.shadow_maps.push_back(ShadowMap(scene.SHMAP_W, scene.SHMAP_H));

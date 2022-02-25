@@ -31,32 +31,6 @@ typedef  unsigned char  UCH;
 
 constexpr double PI = 3.14159;
 
-/**
- * Absolute distance.
- */
-double distance(double dx, double dy);
-
-/**
- * Absolute distance.
- */
-double distance(double dx, double dy, double dz);
-
-/**
- * Clamp value to range.
- */
-int bounds(int v, int min, int max);
-
-/**
- * True if positive.
- * False if 0 or negative.
- */
-bool sign(double v);
-
-/**
- * Random from 0 to 1
- */
-double randd();
-
 
 /**
  * RGB unsigned char image.
@@ -184,6 +158,8 @@ struct Face {
     Vec3 p1, p2, p3;
     Vec3 normal;
 
+    double _radius;  // used internally, max(dist(p1, p2), dist(p1, p3))
+
     Face(const Vec3& p1, const Vec3& p2, const Vec3& p3, const Vec3& normal);
 };
 
@@ -236,7 +212,7 @@ struct Scene {
     double fov;   // FOV in degrees of X (horizontal) of camera.
     double bg;  // background light intensity
 
-    bool _built;
+    std::vector<Face> _faces;  // used internally
 
     Scene();
 
@@ -257,6 +233,29 @@ struct Scene {
      */
     void add_light(double x, double y, double z, double power);
 };
+
+
+double distance(double dx, double dy);
+
+double distance(double dx, double dy, double dz);
+
+double distance(Vec3& v1, Vec3& v2);
+
+/**
+ * Clamp value to range.
+ */
+int bounds(int v, int min, int max);
+
+/**
+ * True if positive.
+ * False if 0 or negative.
+ */
+bool sign(double v);
+
+/**
+ * Random from 0 to 1
+ */
+double randd();
 
 
 /**
