@@ -95,11 +95,7 @@ double render_px(Scene& scene, Image& img, int x, int y) {
 void render(Scene& scene, Image& img, int samples, bool verbose) {
     int start = time();
 
-    for (Face& face: scene._faces)
-        face._min_dist = distance(face._center, scene.cam_loc) - face._radius;
-    std::sort(scene._faces.begin(), scene._faces.end(),
-        [](Face& a, Face& b){return a._min_dist < b._min_dist;}
-    );
+    build_faces(scene, scene.cam_loc);
 
     int last_percent = -1;  // for verbose
     for (int y = 0; y < img.h; y++) {

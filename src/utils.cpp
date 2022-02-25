@@ -17,6 +17,7 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 
+#include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <iostream>
@@ -72,6 +73,16 @@ Intersect intersect(std::vector<Face>& faces, Ray& ray) {
     ret.dist = 1e9;
 
     for (Face& f: faces) {
+        // ignore face if can't be intersected
+        Vec3 delta = f._center.sub(ray.pt);
+        if (ray.dir.angle(delta) > f._angle)
+            continue;
+
+        // if current dist is closer than what this face can possibly be,
+        // and all faces later are farther away, then we can stop.
+        if (ret.dist < f._min_dist-0.01)
+            break;
+
         Vec3 q1 = ray.pt.sub(ray.dir.mul(1e4));
         Vec3 q2 = ray.pt.add(ray.dir.mul(1e4));
 
@@ -93,14 +104,21 @@ Intersect intersect(std::vector<Face>& faces, Ray& ray) {
                 ret.normal = f.normal;
             }
         }
-
-        // if current dist is closer than what this face can possibly be,
-        // and all faces later are farther away, then we can stop.
-        if (ret.dist < f._min_dist-0.01)
-            break;
     }
 
     return ret;
+}
+
+void build_faces(Scene& scene, Vec3& pt) {
+    for (Face& face: scene._faces) {
+        double dist = distance(face._center, pt);
+        face._min_dist = dist - face._radius;
+        face._angle = 2 * atan(face._radius / dist);
+    }
+
+    std::sort(scene._faces.begin(), scene._faces.end(),
+        [](Face& a, Face& b){return a._min_dist < b._min_dist;}
+    );
 }
 
 

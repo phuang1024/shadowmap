@@ -17,6 +17,7 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 
+#include <cmath>
 #include "shadowmap.hpp"
 
 
@@ -86,6 +87,10 @@ Vec3 Vec3::cross(const Vec3& v) const {
     double z = this->x*v.y - this->y*v.x;
 
     return Vec3(x, y, z);
+}
+
+double Vec3::angle(const Vec3& v) const {
+    return acos(dot(v) / magnitude() / v.magnitude());
 }
 
 

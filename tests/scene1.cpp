@@ -17,7 +17,10 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 
+#include <iostream>
 #include "shadowmap.hpp"
+
+using Shadowmap::Vec3;
 
 
 int main() {

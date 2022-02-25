@@ -34,6 +34,11 @@ void preprocess(Scene& scene) {
     for (Mesh& obj: scene.objs) {
         for (Face& face: obj.faces) {
             Face copy = face;
+
+            copy.p1 = copy.p1.add(obj.loc);
+            copy.p2 = copy.p2.add(obj.loc);
+            copy.p3 = copy.p3.add(obj.loc);
+
             copy._center = copy.p1.add(copy.p2).add(copy.p3).div(3);
             copy._radius = std::max(
                 distance(copy.p1, copy._center),
@@ -54,11 +59,7 @@ void preprocess(Scene& scene) {
  * @param index is for verbose
  */
 void build_map(Scene& scene, ShadowMap& map, Light& light, int index = 0, bool verbose = false) {
-    for (Face& face: scene._faces)
-        face._min_dist = distance(face._center, light.loc) - face._radius;
-    std::sort(scene._faces.begin(), scene._faces.end(),
-        [](Face& a, Face& b){return a._min_dist < b._min_dist;}
-    );
+    build_faces(scene, light.loc);
 
     int last_percent = -1;
     for (int y = 0; y < scene.SHMAP_H; y++) {

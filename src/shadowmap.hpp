@@ -139,6 +139,11 @@ struct Vec3 {
     double dot(const Vec3& v) const;
 
     Vec3 cross(const Vec3& v) const;
+
+    /**
+     * Angle between this and v.
+     */
+    double angle(const Vec3& v) const;
 };
 
 /**
@@ -160,6 +165,7 @@ struct Face {
 
     Vec3 _center;  // used internally, avg(p1, p2, p3)
     double _radius;  // used internally, max(dist(p1, _center), ...)
+    double _angle;  // used internally
     double _min_dist;  // used internally
 
     Face(const Vec3& p1, const Vec3& p2, const Vec3& p3, const Vec3& normal);
@@ -280,8 +286,15 @@ struct Intersect {
  * Else, smallest distance.
  *
  * @param faces sorted by Face._min_dist
+ * @param faces build_faces() call with respect to ray.pt
  */
 Intersect intersect(std::vector<Face>& faces, Ray& ray);
+
+/**
+ * Build faces with respect to a point.
+ * Used internally.
+ */
+void build_faces(Scene& scene, Vec3& pt);
 
 /**
  * Build scene.
