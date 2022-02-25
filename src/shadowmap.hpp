@@ -260,6 +260,22 @@ struct Scene {
 
 
 /**
+ * Information about an intersection between a ray and a face.
+ */
+struct Intersect {
+    double dist;  // distance from ray origin to intersection
+    Vec3 normal;  // normal of the face at intersection
+    Vec3 pos;     // position of the intersection
+};
+
+/**
+ * Intersect mesh with a ray.
+ * If no intersection, returns arbitrarily large number.
+ * Else, smallest distance to the intersection.
+ */
+Intersect intersect(Mesh& mesh, Ray& ray);
+
+/**
  * Build scene.
  * Call before rendering.
  */

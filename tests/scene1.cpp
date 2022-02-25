@@ -24,11 +24,11 @@ int main() {
     Shadowmap::Scene scene(0, -8, 4, 0, 0.5, 60);
     scene.bg = 20;
 
-    Shadowmap::Mesh m("monkey.stl");
+    Shadowmap::Mesh m("cylinder.stl");
     scene.objs.push_back(m);
     scene.add_light(4, -5, 6, 6000);
 
-    std::ofstream fp("scene3.img");
+    std::ofstream fp("scene1.img");
     Shadowmap::Image img(1280, 720);
 
     Shadowmap::build(scene, true);
