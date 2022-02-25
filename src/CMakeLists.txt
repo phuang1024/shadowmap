@@ -17,14 +17,13 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-CXX = g++
-CXXFLAGS = -Wall -O3 -std=c++17 -c -fPIC
-CXXFILES = image.o linalg.o render.o scene.o utils.o
+cmake_minimum_required(VERSION 3.10)
 
-.PHONY: all clean
+project(Shadowmap VERSION 0.0.2)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-all: $(CXXFILES)
-	ar rcs libshadowmap.a $(CXXFILES)
+set(Shadowmap_srcs image.cpp linalg.cpp render.cpp scene.cpp utils.cpp)
+add_library(shadowmap ${Shadowmap_srcs})
 
-clean:
-	rm -f *.o
+target_include_directories(shadowmap INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})

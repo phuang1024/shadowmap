@@ -17,12 +17,12 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-SCENE ?= scene1
+cmake_minimum_required(VERSION 3.10)
 
-CXX = g++
-CXXFLAGS = -Wall -O3 -std=c++17 -I../src -L../src -lshadowmap
+project(ShadowmapTest)
 
-.PHONY: all
+add_library(../src)
+target_link_libraries(shadowmap ../src)
 
-all:
-	$(CXX) -o $(SCENE).out $(SCENE).cpp $(CXXFLAGS)
+add_executable(scene1 scene1.cpp)
+add_executable(scene2 scene2.cpp)
