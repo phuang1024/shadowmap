@@ -24,12 +24,14 @@ using Shadowmap::Vec3;
 
 
 int main() {
-    Shadowmap::Scene scene(0, -8, 4, 0, 0.5, 60);
+    Shadowmap::Scene scene(0, -9, 4, 0, 0.3, 70);
     scene.bg = 20;
 
-    Shadowmap::Mesh m("monkey.stl");
-    scene.objs.push_back(m);
+    scene.objs.push_back(Shadowmap::Mesh(Vec3(0, 0, 2), "monkey.stl"));
+    scene.objs.push_back(Shadowmap::Mesh(Vec3(0, 0, 0), "plane.stl"));
+
     scene.add_light(4, -5, 6, 6000);
+    scene.add_light(-5, -3, 3, 1000);
 
     std::ofstream fp("scene1.img");
     Shadowmap::Image img(1280, 720);
