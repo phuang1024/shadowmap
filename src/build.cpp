@@ -17,6 +17,7 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include "shadowmap.hpp"
@@ -53,6 +54,12 @@ void preprocess(Scene& scene) {
  * @param index is for verbose
  */
 void build_map(Scene& scene, ShadowMap& map, Light& light, int index = 0, bool verbose = false) {
+    for (Face& face: scene._faces)
+        face._min_dist = distance(face._center, light.loc) - face._radius;
+    std::sort(scene._faces.begin(), scene._faces.end(),
+        [](Face& a, Face& b){return a._min_dist < b._min_dist;}
+    );
+
     int last_percent = -1;
     for (int y = 0; y < scene.SHMAP_H; y++) {
         for (int x = 0; x < scene.SHMAP_W; x++) {
@@ -69,13 +76,8 @@ void build_map(Scene& scene, ShadowMap& map, Light& light, int index = 0, bool v
 
             Vec3 delta(sin(pan)*cos(tilt), cos(pan)*cos(tilt), -sin(tilt));
             Ray ray(light.loc, delta);
+            double dist = intersect(scene._faces, ray).dist;
 
-            double dist = 1e9;
-            for (int i = 0; i < (int)scene.objs.size(); i++) {
-                double d = intersect(scene.objs[i], ray).dist;
-                if (d < dist)
-                    dist = d;
-            }
             map.set(x, y, dist);
         }
     }

@@ -160,6 +160,7 @@ struct Face {
 
     Vec3 _center;  // used internally, avg(p1, p2, p3)
     double _radius;  // used internally, max(dist(p1, _center), ...)
+    double _min_dist;  // used internally
 
     Face(const Vec3& p1, const Vec3& p2, const Vec3& p3, const Vec3& normal);
 };
@@ -274,11 +275,13 @@ struct Intersect {
 };
 
 /**
- * Intersect mesh with a ray.
- * If no intersection, returns arbitrarily large number.
- * Else, smallest distance to the intersection.
+ * Intersect faces with a ray.
+ * If no intersection, distance is arbitrarily large number.
+ * Else, smallest distance.
+ *
+ * @param faces sorted by Face._min_dist
  */
-Intersect intersect(Mesh& mesh, Ray& ray);
+Intersect intersect(std::vector<Face>& faces, Ray& ray);
 
 /**
  * Build scene.

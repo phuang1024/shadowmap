@@ -17,6 +17,7 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include "shadowmap.hpp"
@@ -57,14 +58,7 @@ double render_px(Scene& scene, Image& img, int x, int y) {
     // find closest object in current pixel
     Vec3 delta(sin(pan)*cos(tilt), cos(pan)*cos(tilt), -sin(tilt));
     Ray ray(scene.cam_loc, delta.unit());
-
-    Intersect inter;
-    inter.dist = 1e9;
-    for (int i = 0; i < (int)scene.objs.size(); i++) {
-        Intersect curr = intersect(scene.objs[i], ray);
-        if (curr.dist < inter.dist)
-            inter = curr;
-    }
+    Intersect inter = intersect(scene._faces, ray);
     if (inter.dist >= 1e9-10)
         return scene.bg;
 
@@ -100,6 +94,12 @@ double render_px(Scene& scene, Image& img, int x, int y) {
 
 void render(Scene& scene, Image& img, int samples, bool verbose) {
     int start = time();
+
+    for (Face& face: scene._faces)
+        face._min_dist = distance(face._center, scene.cam_loc) - face._radius;
+    std::sort(scene._faces.begin(), scene._faces.end(),
+        [](Face& a, Face& b){return a._min_dist < b._min_dist;}
+    );
 
     int last_percent = -1;  // for verbose
     for (int y = 0; y < img.h; y++) {

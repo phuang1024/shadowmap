@@ -19,6 +19,7 @@
 
 #include <chrono>
 #include <cmath>
+#include <iostream>
 #include "shadowmap.hpp"
 
 
@@ -64,15 +65,13 @@ double signed_volume(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d)
 }
 
 /**
- * Formula from https://stackoverflow.com/q/42740765/
+ * Intersection formula from https://stackoverflow.com/q/42740765/
  */
-Intersect intersect(Mesh& mesh, Ray& ray) {
+Intersect intersect(std::vector<Face>& faces, Ray& ray) {
     Intersect ret;
     ret.dist = 1e9;
 
-    for (int i = 0; i < (int)mesh.faces.size(); i++) {
-        Face& f = mesh.faces[i];
-
+    for (Face& f: faces) {
         Vec3 q1 = ray.pt.sub(ray.dir.mul(1e4));
         Vec3 q2 = ray.pt.add(ray.dir.mul(1e4));
 
@@ -94,6 +93,11 @@ Intersect intersect(Mesh& mesh, Ray& ray) {
                 ret.normal = f.normal;
             }
         }
+
+        // if current dist is closer than what this face can possibly be,
+        // and all faces later are farther away, then we can stop.
+        if (ret.dist < f._min_dist-0.01)
+            break;
     }
 
     return ret;

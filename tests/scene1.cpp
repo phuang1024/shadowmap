@@ -24,7 +24,7 @@ int main() {
     Shadowmap::Scene scene(0, -8, 4, 0, 0.5, 60);
     scene.bg = 20;
 
-    Shadowmap::Mesh m("cylinder.stl");
+    Shadowmap::Mesh m("monkey.stl");
     scene.objs.push_back(m);
     scene.add_light(4, -5, 6, 6000);
 
