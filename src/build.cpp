@@ -75,6 +75,8 @@ void build_map(Scene& scene, ShadowMap& map, Light& light, int index = 0, bool v
 
 
 void build(Scene& scene, bool verbose) {
+    int start = time();
+
     preprocess(scene);
 
     for (int i = 0; i < (int)scene.lights.size(); i++) {
@@ -82,8 +84,10 @@ void build(Scene& scene, bool verbose) {
         build_map(scene, scene.shadow_maps[i], scene.lights[i], i, verbose);
     }
 
-    if (verbose)
-        std::cerr << std::endl;
+    if (verbose) {
+        double elapse = (time() - start) / 1000.0;
+        std::cerr << "\rBuild finished in " << elapse << " seconds" << std::endl;
+    }
 }
 
 

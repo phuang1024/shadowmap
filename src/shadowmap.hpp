@@ -257,6 +257,11 @@ bool sign(double v);
  */
 double randd();
 
+/**
+ * Milliseconds since epoch.
+ */
+int time();
+
 
 /**
  * Information about an intersection between a ray and a face.

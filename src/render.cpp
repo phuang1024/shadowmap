@@ -99,6 +99,8 @@ double render_px(Scene& scene, Image& img, int x, int y) {
 }
 
 void render(Scene& scene, Image& img, int samples, bool verbose) {
+    int start = time();
+
     int last_percent = -1;  // for verbose
     for (int y = 0; y < img.h; y++) {
         for (int x = 0; x < img.w; x++) {
@@ -120,8 +122,10 @@ void render(Scene& scene, Image& img, int samples, bool verbose) {
         }
     }
 
-    if (verbose)
-        std::cerr << std::endl;
+    if (verbose) {
+        double elapse = (time() - start) / 1000.0;
+        std::cerr << "\rRender finished in " << elapse << " seconds" << std::endl;
+    }
 }
 
 

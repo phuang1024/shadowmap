@@ -17,6 +17,7 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 
+#include <chrono>
 #include <cmath>
 #include "shadowmap.hpp"
 
@@ -46,6 +47,12 @@ bool sign(double v) {
 
 double randd() {
     return (rand() % (int)1e9) / 1e9;
+}
+
+int time() {
+    auto now = std::chrono::system_clock::now().time_since_epoch();
+    int elapse = std::chrono::duration_cast<std::chrono::milliseconds>(now).count();
+    return elapse;
 }
 
 

@@ -51,14 +51,11 @@ Scene::Scene(double cam_x, double cam_y, double cam_z, double pan, double tilt, 
 }
 
 Scene::~Scene() {
-    if (_built) {
-        for (ShadowMap& map: shadow_maps)
-            map.free();
-    }
+    for (ShadowMap& map: shadow_maps)
+        map.free();
 }
 
 void Scene::_init() {
-    _built = false;
     SHMAP_W = 1024;
     SHMAP_H = 1024;
 }
