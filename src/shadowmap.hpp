@@ -158,7 +158,8 @@ struct Face {
     Vec3 p1, p2, p3;
     Vec3 normal;
 
-    double _radius;  // used internally, max(dist(p1, p2), dist(p1, p3))
+    Vec3 _center;  // used internally, avg(p1, p2, p3)
+    double _radius;  // used internally, max(dist(p1, _center), ...)
 
     Face(const Vec3& p1, const Vec3& p2, const Vec3& p3, const Vec3& normal);
 };

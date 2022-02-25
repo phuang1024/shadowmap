@@ -33,7 +33,15 @@ void preprocess(Scene& scene) {
     for (Mesh& obj: scene.objs) {
         for (Face& face: obj.faces) {
             Face copy = face;
-            copy._radius = std::max(distance(copy.p1, copy.p2), distance(copy.p1, copy.p3));
+            copy._center = copy.p1.add(copy.p2).add(copy.p3).div(3);
+            copy._radius = std::max(
+                distance(copy.p1, copy._center),
+                std::max(
+                    distance(copy.p2, copy._center),
+                    distance(copy.p3, copy._center)
+                )
+            );
+
             scene._faces.push_back(copy);
         }
     }
