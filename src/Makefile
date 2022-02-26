@@ -19,7 +19,7 @@
 
 CXX = g++
 CXXFLAGS = -Wall -O3 -std=c++17 -c -fPIC
-CXXFILES = build.o image.o linalg.o mesh.o render.o scene.o utils.o
+CXXFILES = build.o mesh.o render.o scene.o
 
 .PHONY: all clean
 

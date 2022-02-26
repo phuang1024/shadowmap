@@ -19,144 +19,20 @@
 
 #pragma once
 
+#include <cmath>
 #include <fstream>
 #include <string>
 #include <vector>
+
+#include "linalg.hpp"
+#include "image.hpp"
+#include "utils.hpp"
 
 
 namespace Shadowmap {
 
 
-typedef  unsigned char  UCH;
-
 constexpr double PI = 3.14159;
-
-
-/**
- * RGB unsigned char image.
- */
-struct Image {
-    int w, h;
-    UCH* data;
-
-    /**
-     * Initialize with width and height.
-     */
-    Image(int width, int height);
-
-    /**
-     * Free data.
-     */
-    ~Image();
-
-    /**
-     * Get pixel and channel value.
-     */
-    UCH get(int x, int y, int chn);
-
-    /**
-     * Set pixel and channel value.
-     */
-    void set(int x, int y, int chn, UCH value);
-
-    /**
-     * Write image to file.
-     * Use scripts/convert.py to convert to other formats.
-     */
-    void write(std::ofstream& fp);
-};
-
-/**
- * Grayscale double image.
- * No automatic deallocation. Use map.free() to free memory.
- */
-struct ShadowMap {
-    int w, h;
-    double* data;
-
-    /**
-     * Initialize with width and height.
-     */
-    ShadowMap(int width, int height);
-
-    /**
-     * Free data.
-     */
-    void free();
-
-    /**
-     * Get pixel value.
-     */
-    double get(int x, int y);
-
-    /**
-     * Set pixel value.
-     */
-    void set(int x, int y, double value);
-};
-
-
-/**
- * 3D vector of doubles.
- */
-struct Vec3 {
-    double x, y, z;
-
-    /**
-     * Initialize to 0
-     */
-    Vec3();
-
-    Vec3(double x, double y, double z);
-
-    Vec3(const Vec3& v);
-
-    double magnitude() const;
-
-    double sum() const;
-
-    /**
-     * Sum of squares of components.
-     * x**2 + y**2 + z**2
-     */
-    double sqsum() const;
-
-    Vec3 unit() const;
-
-    Vec3 add(const Vec3& v) const;
-
-    Vec3 sub(const Vec3& v) const;
-
-    Vec3 mul(double s) const;
-
-    /**
-     * Element wise multiplication.
-     */
-    Vec3 mul(const Vec3& v) const;
-
-    Vec3 div(double s) const;
-
-    double dot(const Vec3& v) const;
-
-    Vec3 cross(const Vec3& v) const;
-
-    /**
-     * Angle between this and v.
-     */
-    double angle(const Vec3& v) const;
-};
-
-/**
- * Vector with starting point.
- */
-struct Ray {
-    Vec3 pt;  // starting point
-    Vec3 dir;
-
-    Ray(double x, double y, double z, double dx, double dy, double dz);
-
-    Ray(const Vec3& pt, const Vec3& dir);
-};
 
 
 struct Face {
@@ -244,49 +120,12 @@ struct Scene {
 };
 
 
-double min(double a, double b, double c);
-
-double max(double a, double b, double c);
-
-double distance(double dx, double dy);
-
-double distance(double dx, double dy, double dz);
-
-double distance(Vec3& v1, Vec3& v2);
-
 /**
- * Clamp value to range.
+ * From https://stackoverflow.com/q/42740765/
  */
-int bounds(int v, int min, int max);
-
-double dbounds(double v, double min, double max);
-
-/**
- * True if positive.
- * False if 0 or negative.
- */
-bool sign(double v);
-
-/**
- * Random from 0 to 1
- */
-double randd();
-
-/**
- * Milliseconds since epoch.
- */
-int time();
-
-
-/**
- * Information about an intersection between a ray and a face.
- */
-struct Intersect {
-    double dist;  // distance from ray origin to intersection
-    Vec3 normal;  // normal of the face at intersection
-    Vec3 pos;     // position of the intersection
-    Vec3 color;   // color of the face at intersection
-};
+inline double signed_volume(const Vec3& a, const Vec3& b, const Vec3& c, const Vec3& d) {
+    return b.sub(a).cross(c.sub(a)).dot(d.sub(a)) / 6.0;
+}
 
 /**
  * Intersect faces with a ray.
@@ -295,14 +134,76 @@ struct Intersect {
  *
  * @param faces sorted by Face._min_dist
  * @param faces build_faces() call with respect to ray.pt
+ *
+ * Intersection formula from https://stackoverflow.com/q/42740765/
  */
-Intersect intersect(std::vector<Face>& faces, Ray& ray);
+inline Intersect intersect(std::vector<Face>& faces, Ray& ray) {
+    Intersect ret;
+    ret.dist = 1e9;
+
+    for (Face& f: faces) {
+        // ignore face if can't be intersected
+        Vec3 delta = f._center.sub(ray.pt);
+        if (ray.dir.angle(delta) > f._angle)
+            continue;
+
+        // if current dist is closer than what this face can possibly be,
+        // and all faces later are farther away, then we can stop.
+        if (ret.dist < f._min_dist-0.01)
+            break;
+
+        Vec3 q1 = ray.pt.sub(ray.dir.mul(1e4));
+        Vec3 q2 = ray.pt.add(ray.dir.mul(1e4));
+
+        bool a = sign(signed_volume(q1, f.p1, f.p2, f.p3));
+        bool b = sign(signed_volume(q2, f.p1, f.p2, f.p3));
+        bool c = sign(signed_volume(q1, q2, f.p1, f.p2));
+        bool d = sign(signed_volume(q1, q2, f.p2, f.p3));
+        bool e = sign(signed_volume(q1, q2, f.p3, f.p1));
+
+        if ((a != b) && (c == d) && (d == e)) {  // there is intersection
+            Vec3 n = f.p2.sub(f.p1).cross(f.p3.sub(f.p1));
+            double t = -1 * q1.sub(f.p1).dot(n) / q2.sub(q1).dot(n);
+            Vec3 pt = q1.add(q2.sub(q1).mul(t));
+            double dist = pt.sub(ray.pt).magnitude();
+
+            if (dist < ret.dist) {
+                ret.dist = dist;
+                ret.pos = pt;
+                ret.normal = f.normal;
+                ret.color = f._color;
+            }
+        }
+    }
+
+    return ret;
+}
+
 
 /**
  * Build faces with respect to a point.
  * Used internally.
  */
-void build_faces(Scene& scene, Vec3& pt);
+inline void build_faces(Scene& scene, Vec3& pt) {
+    for (Face& face: scene._faces) {
+        face._min_dist = min(
+            distance(pt, face.p1),
+            distance(pt, face.p2),
+            distance(pt, face.p3)
+        );
+
+        Vec3 center = face._center.sub(pt);
+        face._angle = max(
+            center.angle(face.p1.sub(pt)),
+            center.angle(face.p2.sub(pt)),
+            center.angle(face.p3.sub(pt))
+        );
+    }
+
+    std::sort(scene._faces.begin(), scene._faces.end(),
+        [](Face& a, Face& b){return a._min_dist < b._min_dist;}
+    );
+}
 
 /**
  * Build scene.
