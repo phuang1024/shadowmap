@@ -244,6 +244,10 @@ struct Scene {
 };
 
 
+double min(double a, double b, double c);
+
+double max(double a, double b, double c);
+
 double distance(double dx, double dy);
 
 double distance(double dx, double dy, double dz);

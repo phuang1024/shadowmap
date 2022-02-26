@@ -27,6 +27,14 @@
 namespace Shadowmap {
 
 
+double min(double a, double b, double c) {
+    return std::min(a, std::min(b, c));
+}
+
+double max(double a, double b, double c) {
+    return std::max(a, std::max(b, c));
+}
+
 double distance(double dx, double dy, double dz) {
     return sqrt(pow(dx, 2) + pow(dy, 2) + pow(dz, 2));
 }
@@ -116,9 +124,18 @@ Intersect intersect(std::vector<Face>& faces, Ray& ray) {
 
 void build_faces(Scene& scene, Vec3& pt) {
     for (Face& face: scene._faces) {
-        double dist = distance(face._center, pt);
-        face._min_dist = dist - face._radius;
-        face._angle = 2 * atan(face._radius / dist);
+        face._min_dist = min(
+            distance(pt, face.p1),
+            distance(pt, face.p2),
+            distance(pt, face.p3)
+        );
+
+        Vec3 center = face._center.sub(pt);
+        face._angle = max(
+            center.angle(face.p1.sub(pt)),
+            center.angle(face.p2.sub(pt)),
+            center.angle(face.p3.sub(pt))
+        );
     }
 
     std::sort(scene._faces.begin(), scene._faces.end(),
