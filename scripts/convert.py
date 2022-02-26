@@ -44,6 +44,7 @@ def main():
                 else:
                     img[y, x] = fp.read(1)[0]
 
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     cv2.imwrite(sys.argv[2], img)
 
 

@@ -27,7 +27,7 @@ int main() {
     Shadowmap::Scene scene(0, -9, 4, 0, 0.3, 70);
     scene.bg = Vec3(0.1, 0.1, 0.1);
 
-    scene.objs.push_back(Shadowmap::Mesh(Vec3(0, 0, 2), Vec3(0.8, 0.8, 1), "cylinder.stl"));
+    scene.objs.push_back(Shadowmap::Mesh(Vec3(0, 0, 2), Vec3(0.7, 0.7, 1), "cylinder.stl"));
     scene.objs.push_back(Shadowmap::Mesh(Vec3(0, 0, 0), Vec3(1, 1, 1), "plane.stl"));
 
     scene.add_light(4, -5, 6, 20, Vec3(1, 1, 1));

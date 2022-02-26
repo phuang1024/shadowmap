@@ -85,9 +85,7 @@ Vec3 render_px(Scene& scene, Image& img, int x, int y) {
         fac_norm = std::max(fac_norm, 0.0);
 
         double power = light.power * fac_dist * fac_norm;
-        v.x += power * light.color.x * inter.color.x;
-        v.y += power * light.color.y * inter.color.y;
-        v.z += power * light.color.z * inter.color.z;
+        v = v.add(light.color.mul(inter.color).mul(power));
     }
 
     v.x = dbounds(v.x, 0, 1);
