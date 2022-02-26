@@ -25,13 +25,13 @@ using Shadowmap::Vec3;
 
 int main() {
     Shadowmap::Scene scene(0, -9, 4, 0, 0.3, 70);
-    scene.bg = 20;
+    scene.bg = Vec3(0.1, 0.1, 0.1);
 
-    scene.objs.push_back(Shadowmap::Mesh(Vec3(0, 0, 2), "monkey.stl"));
-    scene.objs.push_back(Shadowmap::Mesh(Vec3(0, 0, 0), "plane.stl"));
+    scene.objs.push_back(Shadowmap::Mesh(Vec3(0, 0, 2), Vec3(0.8, 0.8, 1), "cylinder.stl"));
+    scene.objs.push_back(Shadowmap::Mesh(Vec3(0, 0, 0), Vec3(1, 1, 1), "plane.stl"));
 
-    scene.add_light(4, -5, 6, 6000);
-    scene.add_light(-5, -3, 3, 1000);
+    scene.add_light(4, -5, 6, 20, Vec3(1, 1, 1));
+    scene.add_light(-5, -3, 3, 3.5, Vec3(0.8, 1, 0.8));
 
     std::ofstream fp("scene1.img");
     Shadowmap::Image img(1280, 720);

@@ -35,6 +35,8 @@ void preprocess(Scene& scene) {
         for (Face& face: obj.faces) {
             Face copy = face;
 
+            copy._color = obj.color;
+
             copy.p1 = copy.p1.add(obj.loc);
             copy.p2 = copy.p2.add(obj.loc);
             copy.p3 = copy.p3.add(obj.loc);

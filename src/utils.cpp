@@ -43,6 +43,10 @@ int bounds(int v, int min, int max) {
     return std::min(std::max(v, min), max);
 }
 
+double dbounds(double v, double min, double max) {
+    return std::min(std::max(v, min), max);
+}
+
 bool sign(double v) {
     return v >= 0;
 }
@@ -102,6 +106,7 @@ Intersect intersect(std::vector<Face>& faces, Ray& ray) {
                 ret.dist = dist;
                 ret.pos = pt;
                 ret.normal = f.normal;
+                ret.color = f._color;
             }
         }
     }

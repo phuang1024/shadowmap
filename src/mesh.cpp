@@ -34,17 +34,14 @@ Face::Face(const Vec3& p1, const Vec3& p2, const Vec3& p3, const Vec3& normal) {
 Mesh::Mesh() {
 }
 
-Mesh::Mesh(const Vec3& loc) {
+Mesh::Mesh(const Vec3& loc, const Vec3& color) {
     this->loc = loc;
+    this->color = color;
 }
 
-Mesh::Mesh(const Vec3& loc, const std::string& filename) {
+Mesh::Mesh(const Vec3& loc, const Vec3& color, const std::string& filename) {
     this->loc = loc;
-    std::ifstream fp(filename);
-    read_stl(fp);
-}
-
-Mesh::Mesh(const std::string& filename) {
+    this->color = color;
     std::ifstream fp(filename);
     read_stl(fp);
 }

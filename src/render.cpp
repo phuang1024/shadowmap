@@ -45,7 +45,7 @@ double read_shadow_map(Scene& scene, ShadowMap& map, Vec3 delta) {
 /**
  * Returns the color of rendered pixel.
  */
-double render_px(Scene& scene, Image& img, int x, int y) {
+Vec3 render_px(Scene& scene, Image& img, int x, int y) {
     double fov_x = scene.fov / 360;
     double fov_y = fov_x * img.h / img.w;
     double tilt = ((double)y/img.h - 0.5) * 2*PI * fov_y + scene.cam_tilt;
@@ -66,7 +66,7 @@ double render_px(Scene& scene, Image& img, int x, int y) {
     const Vec3& normal = inter.normal;
 
     // compute lighting
-    double v = scene.bg;
+    Vec3 v = scene.bg;
     for (int i = 0; i < (int)scene.lights.size(); i++) {
         // see if this light hits the object
         Light& light = scene.lights[i];
@@ -84,11 +84,15 @@ double render_px(Scene& scene, Image& img, int x, int y) {
         double fac_norm = light_ray.dot(normal);
         fac_norm = std::max(fac_norm, 0.0);
 
-       v += light.power * fac_dist * fac_norm;
+        double power = light.power * fac_dist * fac_norm;
+        v.x += power * light.color.x * inter.color.x;
+        v.y += power * light.color.y * inter.color.y;
+        v.z += power * light.color.z * inter.color.z;
     }
 
-    if (v > 255)
-        v = 255;
+    v.x = dbounds(v.x, 0, 1);
+    v.y = dbounds(v.y, 0, 1);
+    v.z = dbounds(v.z, 0, 1);
     return v;
 }
 
@@ -108,13 +112,14 @@ void render(Scene& scene, Image& img, int samples, bool verbose) {
                 }
             }
 
-            double sum = 0;
+            Vec3 sum;
             for (int i = 0; i < samples; i++)
-                sum += render_px(scene, img, x, y);
-            sum /= samples;
+                sum = sum.add(render_px(scene, img, x, y));
+            sum = sum.div(samples).mul(255);
 
-            for (int chn = 0; chn < 3; chn++)
-                img.set(x, y, chn, sum);
+            img.set(x, y, 0, sum.x);
+            img.set(x, y, 1, sum.y);
+            img.set(x, y, 2, sum.z);
         }
     }
 

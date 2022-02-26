@@ -24,14 +24,16 @@
 namespace Shadowmap {
 
 
-Light::Light(double x, double y, double z, double power) {
+Light::Light(double x, double y, double z, double power, const Vec3& color) {
     loc = Vec3(x, y, z);
     this->power = power;
+    this->color = color;
 }
 
-Light::Light(const Vec3& loc, double power) {
+Light::Light(const Vec3& loc, double power, const Vec3& color) {
     this->loc = loc;
     this->power = power;
+    this->color = color;
 }
 
 
@@ -60,8 +62,8 @@ void Scene::_init() {
     SHMAP_H = 1024;
 }
 
-void Scene::add_light(double x, double y, double z, double power) {
-    lights.push_back(Light(x, y, z, power));
+void Scene::add_light(double x, double y, double z, double power, const Vec3& color) {
+    lights.push_back(Light(x, y, z, power, color));
 }
 
 

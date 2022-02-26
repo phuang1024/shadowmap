@@ -163,6 +163,7 @@ struct Face {
     Vec3 p1, p2, p3;
     Vec3 normal;
 
+    Vec3 _color;  // automatically set
     Vec3 _center;  // used internally, avg(p1, p2, p3)
     double _radius;  // used internally, max(dist(p1, _center), ...)
     double _angle;  // used internally
@@ -175,16 +176,15 @@ struct Face {
  * Mesh object. Can read binary STL file.
  */
 struct Mesh {
-    Vec3 loc;    // location
+    Vec3 loc;  // location
+    Vec3 color;  // rgb, 0 to 1
     std::vector<Face> faces;
 
     Mesh();
 
-    Mesh(const Vec3& loc);
+    Mesh(const Vec3& loc, const Vec3& color);
 
-    Mesh(const Vec3& loc, const std::string& filename);
-
-    Mesh(const std::string& filename);
+    Mesh(const Vec3& loc, const Vec3& color, const std::string& filename);
 
     /**
      * Clears faces and reads from file.
@@ -197,11 +197,12 @@ struct Mesh {
  */
 struct Light {
     Vec3 loc;  // location
+    Vec3 color;  // rgb, 0 to 1
     double power;
 
-    Light(double x, double y, double z, double power);
+    Light(double x, double y, double z, double power, const Vec3& color);
 
-    Light(const Vec3& loc, double power);
+    Light(const Vec3& loc, double power, const Vec3& color);
 };
 
 
@@ -218,7 +219,7 @@ struct Scene {
     Vec3 cam_loc;
     double cam_pan, cam_tilt;  // radians. (0, 0) faces +y
     double fov;   // FOV in degrees of X (horizontal) of camera.
-    double bg;  // background light intensity
+    Vec3 bg;  // background color, 0 to 1
 
     std::vector<Face> _faces;  // used internally
 
@@ -239,7 +240,7 @@ struct Scene {
     /**
      * Add a light to the scene.
      */
-    void add_light(double x, double y, double z, double power);
+    void add_light(double x, double y, double z, double power, const Vec3& color);
 };
 
 
@@ -253,6 +254,8 @@ double distance(Vec3& v1, Vec3& v2);
  * Clamp value to range.
  */
 int bounds(int v, int min, int max);
+
+double dbounds(double v, double min, double max);
 
 /**
  * True if positive.
@@ -278,6 +281,7 @@ struct Intersect {
     double dist;  // distance from ray origin to intersection
     Vec3 normal;  // normal of the face at intersection
     Vec3 pos;     // position of the intersection
+    Vec3 color;   // color of the face at intersection
 };
 
 /**
